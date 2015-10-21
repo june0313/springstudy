@@ -39,7 +39,7 @@ import static springbook.user.domain.service.UserServiceImpl.MIN_RECOMMEND_FOR_G
 @ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserServiceTest {
 
-	static class TestUserServiceImpl extends UserServiceImpl {
+	static class TestUserService extends UserServiceImpl {
 		private String id = "madnite1";
 
 		@Override
