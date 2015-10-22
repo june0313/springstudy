@@ -2,14 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	   					  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+	   					  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	   					  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
 	<aop:config>
 		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..)))"/>
 		<!--<aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..)))"/>-->
 		<!--<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>-->
 	</aop:config>
+
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>
+			<tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/>
+			<tx:method name="*" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
@@ -38,9 +48,9 @@
 
 	<bean id="mailSender" class="springbook.user.domain.service.DummyMailSender"/>
 
-	<bean id="transactionAdvice" class="springbook.learningtest.jdk.proxy.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager"/>
-	</bean>
+	<!--<bean id="transactionAdvice" class="springbook.learningtest.jdk.proxy.TransactionAdvice">-->
+		<!--<property name="transactionManager" ref="transactionManager"/>-->
+	<!--</bean>-->
 
 	<!--<bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">-->
 		<!--<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))"/>-->
