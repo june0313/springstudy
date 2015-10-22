@@ -2,6 +2,7 @@ package springbook.user.domain.service;
 
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.transaction.annotation.Transactional;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
@@ -29,6 +30,22 @@ public class UserServiceImpl implements UserService {
 
 	public void setMailSender(MailSender mailSender) {
 		this.mailSender = mailSender;
+	}
+
+	@Override public User get(String id) {
+		return this.userDao.get(id);
+	}
+
+	@Override public List<User> getAll() {
+		return this.userDao.getAll();
+	}
+
+	@Override public void deleteAll() {
+		this.userDao.deleteAll();
+	}
+
+	@Override public void update(User user) {
+		this.userDao.update(user);
 	}
 
 	@Override public void upgradeLevels() throws Exception {

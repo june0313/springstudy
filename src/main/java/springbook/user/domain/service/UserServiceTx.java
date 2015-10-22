@@ -5,6 +5,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import springbook.user.domain.User;
 
+import java.util.List;
+
 /**
  * Created by Wayne on 2015. 10. 8..
  */
@@ -41,5 +43,21 @@ public class UserServiceTx implements UserService {
 	// 메소드 구현과 위임
 	@Override public void add(User user) {
 		userService.add(user);
+	}
+
+	@Override public User get(String id) {
+		return null;
+	}
+
+	@Override public List<User> getAll() {
+		return null;
+	}
+
+	@Override public void deleteAll() {
+
+	}
+
+	@Override public void update(User user) {
+
 	}
 }
