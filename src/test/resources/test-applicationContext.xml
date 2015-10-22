@@ -7,19 +7,31 @@
 	   					  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	   					  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..)))"/>
-		<!--<aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..)))"/>-->
-		<!--<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>-->
-	</aop:config>
+	<!--<aop:config>-->
+		<!--<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)"/>-->
+		<!--&lt;!&ndash;<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..)))"/>&ndash;&gt;-->
+		<!--&lt;!&ndash;<aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..)))"/>&ndash;&gt;-->
+		<!--&lt;!&ndash;<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>&ndash;&gt;-->
+	<!--</aop:config>-->
 
-	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>
-			<tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/>
-			<tx:method name="*" propagation="REQUIRED"/>
-		</tx:attributes>
-	</tx:advice>
+	<!--<tx:advice id="transactionAdvice" transaction-manager="transactionManager">-->
+		<!--<tx:attributes>-->
+			<!--<tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>-->
+			<!--<tx:method name="*" propagation="REQUIRED"/>-->
+		<!--</tx:attributes>-->
+	<!--</tx:advice>-->
+
+	<tx:annotation-driven/>
+
+	<!--<bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">-->
+		<!--<property name="transactionManager" ref="transactionManager"/>-->
+		<!--<property name="transactionAttributes">-->
+			<!--<props>-->
+				<!--<prop key="get*">PROPAGATION_REQUIRED, readOnly</prop>-->
+				<!--<prop key="*">PROPAGATION_REQUIRED</prop>-->
+			<!--</props>-->
+		<!--</property>-->
+	<!--</bean>-->
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="com.mysql.jdbc.Driver"/>

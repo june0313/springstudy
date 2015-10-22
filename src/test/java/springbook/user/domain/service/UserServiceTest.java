@@ -7,12 +7,14 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
@@ -48,6 +50,13 @@ public class UserServiceTest {
 				throw new TestUserServiceException();
 			}
 			super.upgradeLevel(user);
+		}
+
+		@Override public List<User> getAll() {
+			for (User user : super.getAll()) {
+				super.update(user);
+			}
+			return null;
 		}
 	}
 
@@ -238,6 +247,11 @@ public class UserServiceTest {
 	@Test
 	public void testAdvisorAutoProxyCreator() throws Exception {
 		assertThat(this.testUserService, instanceOf(java.lang.reflect.Proxy.class));
+	}
+
+	@Test(expected = TransientDataAccessException.class)
+	public void testReadOnlyTransactionAttribute() {
+		testUserService.getAll();
 	}
 
 	private void checkLevelUpgraded(User user, boolean upgraded) {
