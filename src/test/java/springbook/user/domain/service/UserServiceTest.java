@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessException;
@@ -14,7 +13,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
@@ -137,6 +138,9 @@ public class UserServiceTest {
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	private List<User> users;
 
 	@Before
@@ -252,6 +256,23 @@ public class UserServiceTest {
 	@Test(expected = TransientDataAccessException.class)
 	public void testReadOnlyTransactionAttribute() {
 		testUserService.getAll();
+	}
+
+	@Test
+	public void testTransactionSync() throws Exception {
+		userDao.deleteAll();
+		assertThat(userDao.getCount(), is(0));
+
+		DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+		TransactionStatus status = transactionManager.getTransaction(transactionDefinition);
+
+		userService.add(users.get(0));
+		userService.add(users.get(1));
+		assertThat(userDao.getCount(), is(2));
+
+//		transactionManager.rollback(status);
+		transactionManager.commit(status);
+		assertThat(userDao.getCount(), is(2));
 	}
 
 	private void checkLevelUpgraded(User user, boolean upgraded) {
