@@ -11,11 +11,13 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
@@ -40,6 +42,8 @@ import static springbook.user.domain.service.UserServiceImpl.MIN_RECOMMEND_FOR_G
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
+@Transactional
+@TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
 
 	static class TestUserService extends UserServiceImpl {
@@ -204,6 +208,7 @@ public class UserServiceTest {
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NEVER)
 	public void testUpgradeAllOrNothing() throws Exception {
 		userDao.deleteAll();
 		for (User user : users) {
@@ -254,25 +259,17 @@ public class UserServiceTest {
 	}
 
 	@Test(expected = TransientDataAccessException.class)
+	@Transactional(propagation = Propagation.NEVER)
 	public void testReadOnlyTransactionAttribute() {
 		testUserService.getAll();
 	}
 
 	@Test
+	@Rollback
 	public void testTransactionSync() throws Exception {
-		userDao.deleteAll();
-		assertThat(userDao.getCount(), is(0));
-
-		DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
-		TransactionStatus status = transactionManager.getTransaction(transactionDefinition);
-
+		userService.deleteAll();
 		userService.add(users.get(0));
 		userService.add(users.get(1));
-		assertThat(userDao.getCount(), is(2));
-
-//		transactionManager.rollback(status);
-		transactionManager.commit(status);
-		assertThat(userDao.getCount(), is(2));
 	}
 
 	private void checkLevelUpgraded(User user, boolean upgraded) {
