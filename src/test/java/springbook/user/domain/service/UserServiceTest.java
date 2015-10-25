@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessException;
@@ -12,8 +11,12 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
@@ -39,6 +42,8 @@ import static springbook.user.domain.service.UserServiceImpl.MIN_RECOMMEND_FOR_G
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
+@Transactional
+@TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
 
 	static class TestUserService extends UserServiceImpl {
@@ -137,6 +142,9 @@ public class UserServiceTest {
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	private List<User> users;
 
 	@Before
@@ -200,6 +208,7 @@ public class UserServiceTest {
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.NEVER)
 	public void testUpgradeAllOrNothing() throws Exception {
 		userDao.deleteAll();
 		for (User user : users) {
@@ -250,8 +259,17 @@ public class UserServiceTest {
 	}
 
 	@Test(expected = TransientDataAccessException.class)
+	@Transactional(propagation = Propagation.NEVER)
 	public void testReadOnlyTransactionAttribute() {
 		testUserService.getAll();
+	}
+
+	@Test
+	@Rollback
+	public void testTransactionSync() throws Exception {
+		userService.deleteAll();
+		userService.add(users.get(0));
+		userService.add(users.get(1));
 	}
 
 	private void checkLevelUpgraded(User user, boolean upgraded) {
