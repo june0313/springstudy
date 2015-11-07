@@ -58,7 +58,7 @@
 
     <bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService">
         <property name="unmarshaller" ref="unmarshaller" />
-        <property name="sqlMap" value="classpath:/sqlmap.xml" />
+        <property name="sqlRegistry" ref="sqlRegistry" />
     </bean>
 
     <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
@@ -69,7 +69,7 @@
         <property name="sqlMapFile" value="/sqlmap.xml"/>
     </bean>
 
-    <bean id="sqlRegistry" class="springbook.user.sqlservice.HashMapSqlRegistry">
+    <bean id="sqlRegistry" class="springbook.user.sqlservice.ConcurrentHashMapSqlRegistry">
     </bean>
 
     <bean id="userService" class="springbook.user.domain.service.UserServiceImpl">
