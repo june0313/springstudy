@@ -18,5 +18,7 @@ dependencies {
     compile 'javax.mail:mail:1.4.1'
     compile 'org.springframework:spring-context-support:3.2.0.RELEASE'
     compile 'org.aspectj:aspectjweaver:1.8.7'
+    compile 'org.springframework:spring-oxm:3.0.7.RELEASE'
+    compile 'org.codehaus.castor:castor:1.2'
     testCompile "org.mockito:mockito-core:1.+"
 }
