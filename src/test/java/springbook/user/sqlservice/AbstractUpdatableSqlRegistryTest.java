@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by wayne on 2015. 11. 11..
  */
 public abstract class AbstractUpdatableSqlRegistryTest {
-	private UpdatableSqlRegistry sqlRegistry;
+	UpdatableSqlRegistry sqlRegistry;
 
 	@Before
 	public void setUp() throws Exception {
