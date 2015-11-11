@@ -20,5 +20,6 @@ dependencies {
     compile 'org.aspectj:aspectjweaver:1.8.7'
     compile 'org.springframework:spring-oxm:3.0.7.RELEASE'
     compile 'org.codehaus.castor:castor:1.2'
+    compile 'org.hsqldb:hsqldb:2.3.3'
     testCompile "org.mockito:mockito-core:1.+"
 }
