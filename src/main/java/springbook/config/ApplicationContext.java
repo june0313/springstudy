@@ -19,7 +19,6 @@ import springbook.user.domain.UserDao;
 import springbook.user.domain.service.BasicUserLevelUpgradePolicy;
 import springbook.user.domain.service.DummyMailSender;
 import springbook.user.domain.service.UserLevelUpgradePolicy;
-import springbook.user.domain.service.UserService;
 import springbook.user.sqlservice.EmbeddedDbSqlRegistry;
 import springbook.user.sqlservice.OxmSqlService;
 import springbook.user.sqlservice.SqlRegistry;
@@ -27,15 +26,13 @@ import springbook.user.sqlservice.SqlService;
 
 import javax.sql.DataSource;
 
-import static springbook.user.domain.service.UserServiceTest.TestUserService;
-
 /**
  * Created by wayne on 2015. 11. 14..
  */
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
-public class TestApplicationContext {
+public class ApplicationContext {
 	@Autowired
 	UserDao userDao;
 
@@ -53,15 +50,6 @@ public class TestApplicationContext {
 		DataSourceTransactionManager tm = new DataSourceTransactionManager();
 		tm.setDataSource(dataSource());
 		return tm;
-	}
-
-	@Bean
-	public UserService testUserService() {
-		TestUserService testUserService = new TestUserService();
-		testUserService.setUserDao(this.userDao);
-		testUserService.setMailSender(mailSender());
-		testUserService.setLevelUpgradePolicy(basicUserLevelUpgradePolicy());
-		return testUserService;
 	}
 
 	@Bean

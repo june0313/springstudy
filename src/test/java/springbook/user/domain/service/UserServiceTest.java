@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -15,7 +14,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import springbook.config.TestApplicationContext;
@@ -129,22 +127,10 @@ public class UserServiceTest {
 	private UserService testUserService;
 
 	@Autowired
-	private BasicUserLevelUpgradePolicy basicUserLevelUpgradePolicy;
+	private UserLevelUpgradePolicy basicUserLevelUpgradePolicy;
 
 	@Autowired
 	private UserDao userDao;
-
-	@Autowired
-	private UserLevelUpgradePolicy userLevelUpgradePolicy;
-
-	@Autowired
-	private MailSender mailSender;
-
-	@Autowired
-	private ApplicationContext context;
-
-	@Autowired
-	private PlatformTransactionManager transactionManager;
 
 	private List<User> users;
 

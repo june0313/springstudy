@@ -1,7 +1,10 @@
 package springbook.user.domain.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
@@ -12,12 +15,18 @@ import java.util.List;
 /**
  * Created by Wayne on 2015. 10. 1..
  */
+@Service("userService")
 public class UserServiceImpl implements UserService {
 	public static final int MIN_LOGCOUNT_FOR_SLIVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 
+	@Autowired
 	private UserDao userDao;
+
+	@Autowired
 	private UserLevelUpgradePolicy levelUpgradePolicy;
+
+	@Autowired
 	private MailSender mailSender;
 
 	public void setUserDao(UserDao userDao) {

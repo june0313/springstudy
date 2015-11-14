@@ -2,7 +2,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,11 +9,10 @@ import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import springbook.config.TestApplicationContext;
+import springbook.config.ApplicationContext;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
-import springbook.user.domain.service.UserServiceTest;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertThat;
  * Created by Wayne on 2015. 9. 13..
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=TestApplicationContext.class)
+@ContextConfiguration(classes = ApplicationContext.class)
 public class UserDaoTest {
 	@Autowired
 	private ApplicationContext context;
