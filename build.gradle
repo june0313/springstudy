@@ -14,11 +14,11 @@ dependencies {
     compile("mysql:mysql-connector-java:5.1.31")
     compile 'org.springframework:spring-context:3.2.14.RELEASE'
     compile 'org.springframework:spring-jdbc:3.2.14.RELEASE'
-    compile 'org.springframework:spring-test:3.0.7.RELEASE'
+    compile 'org.springframework:spring-test:3.1.4.RELEASE'
     compile 'javax.mail:mail:1.4.1'
     compile 'org.springframework:spring-context-support:3.2.0.RELEASE'
     compile 'org.aspectj:aspectjweaver:1.8.7'
-    compile 'org.springframework:spring-oxm:3.0.7.RELEASE'
+    compile 'org.springframework:spring-oxm:3.1.4.RELEASE'
     compile 'org.codehaus.castor:castor:1.2'
     compile 'org.hsqldb:hsqldb:2.3.3'
     testCompile "org.mockito:mockito-core:1.+"
