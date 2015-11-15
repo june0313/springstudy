@@ -1,8 +1,8 @@
 package springbook.config;
 
-import com.mysql.jdbc.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -14,6 +14,7 @@ import springbook.user.domain.service.DummyMailSender;
 import springbook.user.domain.service.TestUserService;
 import springbook.user.domain.service.UserService;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 /**
@@ -23,16 +24,24 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
 @Import({SqlServiceContext.class})
+@PropertySource("classpath:/database.properties")
 public class AppContext {
 	@Autowired
 	UserDao userDao;
 
+	@Resource
+	Environment env;
+
 	@Bean
 	public DataSource dataSource() {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-		dataSource.setDriverClass(Driver.class);
-		dataSource.setUrl("jdbc:mysql://localhost/MySpring?characterEncoding=UTF-8");
-		dataSource.setUsername("root");
+		try {
+			dataSource.setDriverClass((Class<? extends java.sql.Driver>) Class.forName(env.getProperty("db.driverClass")));
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		dataSource.setUrl(env.getProperty("db.url"));
+		dataSource.setUsername(env.getProperty("db.username"));
 		return dataSource;
 	}
 
