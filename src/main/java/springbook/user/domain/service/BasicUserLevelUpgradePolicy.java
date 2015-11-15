@@ -1,5 +1,6 @@
 package springbook.user.domain.service;
 
+import org.springframework.stereotype.Component;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
@@ -8,6 +9,7 @@ import static springbook.user.domain.service.UserServiceImpl.*;
 /**
  * Created by Wayne on 2015. 10. 4..
  */
+@Component
 public class BasicUserLevelUpgradePolicy implements UserLevelUpgradePolicy {
 	@Override public boolean canUpgradeLevel(User user) {
 		Level currentLevel = user.getLevel();

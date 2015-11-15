@@ -5,18 +5,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import springbook.config.TestApplicationContext;
+import springbook.config.AppContext;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.domain.UserDao;
@@ -40,32 +42,11 @@ import static springbook.user.domain.service.UserServiceImpl.MIN_RECOMMEND_FOR_G
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ActiveProfiles("test")
+@ContextConfiguration(classes = {AppContext.class})
 @Transactional
 @TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
-
-	public static class TestUserService extends UserServiceImpl {
-		private String id = "madnite1";
-
-		@Override
-		protected void upgradeLevel(User user) {
-			if (user.getId().equals(this.id)) {
-				throw new TestUserServiceException();
-			}
-			super.upgradeLevel(user);
-		}
-
-		@Override public List<User> getAll() {
-			for (User user : super.getAll()) {
-				super.update(user);
-			}
-			return null;
-		}
-	}
-
-	static class TestUserServiceException extends RuntimeException {
-	}
 
 	static class MockMailSender implements MailSender {
 		private List<String> requests = new ArrayList<String>();
@@ -74,11 +55,13 @@ public class UserServiceTest {
 			return requests;
 		}
 
-		@Override public void send(SimpleMailMessage mailMessage) throws MailException {
+		@Override
+		public void send(SimpleMailMessage mailMessage) throws MailException {
 			requests.add(mailMessage.getTo()[0]);
 		}
 
-		@Override public void send(SimpleMailMessage[] mailMessage) throws MailException {
+		@Override
+		public void send(SimpleMailMessage[] mailMessage) throws MailException {
 
 		}
 	}
@@ -95,27 +78,33 @@ public class UserServiceTest {
 			return updated;
 		}
 
-		@Override public List<User> getAll() {
+		@Override
+		public List<User> getAll() {
 			return this.users;
 		}
 
-		@Override public void update(User user) {
+		@Override
+		public void update(User user) {
 			updated.add(user);
 		}
 
-		@Override public void add(User user) {
+		@Override
+		public void add(User user) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override public void deleteAll() {
+		@Override
+		public void deleteAll() {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override public User get(String id) {
+		@Override
+		public User get(String id) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override public int getCount() {
+		@Override
+		public int getCount() {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -132,17 +121,27 @@ public class UserServiceTest {
 	@Autowired
 	private UserDao userDao;
 
+	@Autowired
+	private DefaultListableBeanFactory beanFactory;
+
 	private List<User> users;
 
 	@Before
 	public void setUp() throws Exception {
 		users = Arrays.asList(
-			new User("bumjin", "parkbumjin", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SLIVER - 1, 0, "bumjin@naver.com"),
-			new User("joytouch", "kangmyeongseong", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SLIVER, 0, "joytouch@gmail.com"),
-			new User("erwins", "shin", "p3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD - 1, "erwins@naver.com"),
-			new User("madnite1", "leesangho", "p4", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD, "madite1@coupang.com"),
-			new User("green", "ohminkyu", "p5", Level.GOLD, 100, Integer.MAX_VALUE, "green@gmail.com")
+				new User("bumjin", "parkbumjin", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SLIVER - 1, 0, "bumjin@naver.com"),
+				new User("joytouch", "kangmyeongseong", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SLIVER, 0, "joytouch@gmail.com"),
+				new User("erwins", "shin", "p3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD - 1, "erwins@naver.com"),
+				new User("madnite1", "leesangho", "p4", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD, "madite1@coupang.com"),
+				new User("green", "ohminkyu", "p5", Level.GOLD, 100, Integer.MAX_VALUE, "green@gmail.com")
 		);
+	}
+
+	@Test
+	public void testBeans() throws Exception {
+		for (String n : this.beanFactory.getBeanDefinitionNames()) {
+			System.out.println(n + "\t\t" + beanFactory.getBean(n).getClass().getName());
+		}
 	}
 
 	@Test
@@ -205,7 +204,7 @@ public class UserServiceTest {
 		try {
 			this.testUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
-		} catch (TestUserServiceException e) {
+		} catch (TestUserService.TestUserServiceException e) {
 
 		}
 
