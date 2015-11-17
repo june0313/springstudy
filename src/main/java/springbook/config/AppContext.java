@@ -3,6 +3,7 @@ package springbook.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -13,6 +14,8 @@ import springbook.user.domain.UserDao;
 import springbook.user.domain.service.DummyMailSender;
 import springbook.user.domain.service.TestUserService;
 import springbook.user.domain.service.UserService;
+import springbook.user.sqlservice.EnableSqlService;
+import springbook.user.sqlservice.SqlMapConfig;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -23,9 +26,9 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "springbook.user")
-@Import({SqlServiceContext.class})
+@EnableSqlService
 @PropertySource("classpath:/database.properties")
-public class AppContext {
+public class AppContext implements SqlMapConfig{
 	@Autowired
 	UserDao userDao;
 
@@ -50,6 +53,11 @@ public class AppContext {
 		DataSourceTransactionManager tm = new DataSourceTransactionManager();
 		tm.setDataSource(dataSource());
 		return tm;
+	}
+
+	@Override
+	public org.springframework.core.io.Resource getSqlMapResource() {
+		return new ClassPathResource("/sqlmap.xml", UserDao.class);
 	}
 
 	@Configuration
