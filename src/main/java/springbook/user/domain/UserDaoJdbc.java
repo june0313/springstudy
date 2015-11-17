@@ -1,21 +1,24 @@
 package springbook.user.domain;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import springbook.user.sqlservice.SqlService;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Wayne on 2015. 9. 9..
  */
+@Repository("userDao")
 public class UserDaoJdbc implements UserDao {
 	private JdbcTemplate jdbcTemplate;
-	private Map<String, String> sqlMap;
+
+	@Autowired
 	private SqlService sqlService;
 
 	private RowMapper<User> userMapper = new RowMapper<User>() {
@@ -33,16 +36,9 @@ public class UserDaoJdbc implements UserDao {
 		}
 	};
 
+	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-
-	public void setSqlMap(Map<String, String> sqlMap) {
-		this.sqlMap = sqlMap;
-	}
-
-	public void setSqlService(SqlService sqlService) {
-		this.sqlService = sqlService;
 	}
 
 	@Override
